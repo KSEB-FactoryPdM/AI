@@ -1,0 +1,44 @@
+# 데이터 루트(각 하위 구조: <power>/<equipment>/<label>/*.csv)
+current_root: "ai/data/dataset/Validation/current/current"
+vibration_root: "ai/data/dataset/Validation/vibration"
+
+# 라벨 매핑(국→영)
+label_map:
+  정상: normal
+  축정렬불량: misalign
+  회전체불평형: unbalance
+  베어링불량: bearing
+  벨트느슨함: belt_loose
+
+# 정상 키워드(폴더명에 기반)
+status_normal_keywords: ["정상","normal"]
+
+# 스펙트럼 밴드(Hz)
+bands_hz: [0, 100, 500, 1000, 2000, 4000]
+use_envelope: true
+
+# 장비 타입 추출 규칙: 이름 "L-CAHU-01R" -> 가운데 토큰("CAHU")
+equipment_type_token_index: 1
+
+# 전력 버킷(문자 그대로 디렉토리명 사용)
+use_power_bucket: true
+
+# AE 하이퍼(모달별, 공통학습/미세튜닝 공용)
+ae_current:   {latent_dim: 16, hidden: [128,64],  epochs: 30, finetune_epochs: 3, batch_size: 512, lr: 1e-3}
+ae_vibration: {latent_dim: 16, hidden: [256,128], epochs: 30, finetune_epochs: 3, batch_size: 512, lr: 1e-3}
+
+# XGB 하이퍼
+xgb:
+  max_depth: 5
+  n_estimators: 600
+  learning_rate: 0.05
+  subsample: 0.9
+  colsample_bytree: 0.8
+  objective: "multi:softprob"   # B 케이스는 내부에서 이항으로 변경
+
+# 임계값 분위수
+ae_threshold_quantile: 0.999
+
+# 출력
+model_version: "2025-08-08.ae16.xgb6"
+out_dir: "models"
